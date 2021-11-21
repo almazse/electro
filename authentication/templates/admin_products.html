@@ -1,0 +1,32 @@
+{% extends 'admin.html' %}
+{% load static %}
+
+{% block table %}
+<h4>Products</h4>
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Slug</th>
+        <th>Price</th>
+        <th>Old price</th>
+        <th>Rait</th>
+        <th>Stock</th>
+        <th>Available</th>
+        <th>Created</th>
+        <th>Updated</th>
+    </tr>
+{% for product in products %}
+<tr>
+    <td>{{ product.name }}</td>
+    <td>{{ product.slug }}</td>
+    <td>{{ product.price }}</td>
+    <td>{{ product.old_price }}</td>
+    <td>{{ product.rait }}</td>
+    <td>{{ product.stock }}</td>
+    <td>{{ product.available }}</td>
+    <td>{{ product.created }}</td>
+    <td>{{ product.updated }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

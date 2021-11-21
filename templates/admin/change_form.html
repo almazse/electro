@@ -1,0 +1,143 @@
+{% extends "admin/base.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrahead %}{{ block.super }}
+<script src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% block sidebar-menu %}
+  <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+      {% include 'admin/app_list.html' with app_list=available_apps show_changelinks=False %}
+      </ul>
+  </nav>
+{% endblock %}
+
+{% block content %}
+<style>
+    form input[type="text"], input[type="email"], input[type="number"], select  {
+        display: block;
+        width: 100%;
+        height: calc(2.25rem + 2px);
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+        box-shadow: inset 0 0 0 transparent;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+
+    .checkbox-row {
+        position: relative;
+        display: block;
+        padding-left: 1.25rem;
+    }
+
+    input[type=checkbox], input[type=radio] {
+        box-sizing: border-box;
+        padding: 0;
+    }
+
+    .checkbox-row input {
+        position: absolute;
+        margin-top: .3rem;
+        margin-left: -1.25rem;
+    }
+
+    .selectfilter {
+        height: auto;
+    }
+
+    .related-widget-wrapper-link img {
+        width: 20px;
+    }
+</style>
+<section class="content">
+
+      <!-- Default box -->
+      <div class="card">
+          <form class="form-group" {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate>{% csrf_token %}{% block form_top %}{% endblock %}
+             {% if save_on_top %}
+              <div class="card-header">
+               {% block submit_buttons_top %}{% submit_row %}{% endblock %}
+            </div>
+              {% endif %}
+            <div class="card-body">
+                {% block object-tools %}
+                {% if change %}{% if not is_popup %}
+                {% block object-tools-items %}
+                  {% change_form_object_tools %}
+                {% endblock %}
+                {% endif %}{% endif %}
+                {% endblock %}
+
+                {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1">{% endif %}
+                {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
+
+                {% if errors %}
+                    <p class="errornote">
+                    {% if errors|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}
+                    </p>
+                    {{ adminform.form.non_field_errors }}
+                {% endif %}
+
+                {% block field_sets %}
+                {% for fieldset in adminform %}
+                  {% include "admin/includes/fieldset.html" %}
+                {% endfor %}
+                {% endblock %}
+
+                {% block after_field_sets %}{% endblock %}
+
+                {% block inline_field_sets %}
+                {% for inline_admin_formset in inline_admin_formsets %}
+                    {% include inline_admin_formset.opts.template %}
+                {% endfor %}
+                {% endblock %}
+
+                {% block after_related_objects %}{% endblock %}
+
+
+
+                {% block admin_change_form_document_ready %}
+                    <script id="django-admin-form-add-constants"
+                            src="{% static 'admin/js/change_form.js' %}"
+                            {% if adminform and add %}
+                                data-model-name="{{ opts.model_name }}"
+                            {% endif %}
+                            async>
+                    </script>
+                {% endblock %}
+
+                {# JavaScript for prepopulated fields #}
+                {% prepopulated_fields_js %}
+
+
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer">
+               {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+            </div>
+            <!-- /.card-footer-->
+        </form>
+      </div>
+      <!-- /.card -->
+
+    </section>
+
+
+
+
+{% endblock %}

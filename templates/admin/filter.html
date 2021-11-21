@@ -1,0 +1,7 @@
+{% load i18n %}
+<h6>{% blocktranslate with filter_title=title %} By {{ filter_title }} {% endblocktranslate %}</h6>
+
+{% for choice in choices %}
+    <div class="mb-1"> - <a href="{{ choice.query_string|iriencode }}" title="{{ choice.display }}">{{ choice.display }}</a></div>
+
+{% endfor %}

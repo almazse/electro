@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} - Login{% endblock %}
+
+
+{% block container %}
+<!-- SECTION -->
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        {% if user.is_authenticated %}
+
+        <div class="row">
+            <div class="col-md-8"><h1>Hi {{ user.get_username }}, this area is for administrators </h1></div>
+            <div class="col-md-4"><a class="btn btn-danger" style="margin-left: 10px;float:right" href="{% url 'authentication:logout'%}">Logout</a></div>
+        </div>
+        <nav>
+            <div class="container">
+                <ul class="main-nav nav navbar-nav">
+                    <li><a href="{% url 'authentication:admin' %}">Orders</a></li>
+                    <li><a href="{% url 'authentication:admin_top' %}">Top selling</a></li>
+                    <li><a href="{% url 'authentication:admin_products' %}">Products</a></li>
+                    <li><a href="{% url 'authentication:admin_add_product' %}">Add products</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        {% block table %}
+		<h4>Orders</h4>
+        <table class="table">
+            <tr>
+                <th>Number order</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>email</th>
+                <th>address</th>
+                <th>Zip code</th>
+                <th>city</th>
+                <th>country</th>
+                <th>Telephone</th>
+                <th>paid</th>
+                <th>Date of order</th>
+            </tr>
+        {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.first_name }}</td>
+                <td>{{ order.last_name }}</td>
+                <td>{{ order.email }}</td>
+                <td>{{ order.address }}</td>
+                <td>{{ order.zip_code }}</td>
+                <td>{{ order.city }}</td>
+                <td>{{ order.country }}</td>
+                <td>{{ order.tel }}</td>
+                <td>
+                    <form action="{% url 'authentication:admin' %}" method="post">
+                        <label for="paid">paid</label>
+                        {{ order.update_paid.paid }}
+
+                        <input type="hidden" name="order-id" value="{{ order.id }}">
+                        <input type="submit" class="btn" value="Update">
+                        {% csrf_token %}
+                    </form>
+                </td>
+                <td>{{ order.created }}</td>
+            </tr>
+            <tr>
+                <td colspan="11">
+                    <table class="table table-striped table-dark">
+						<tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Qantity</th>
+                        </tr>
+                    {% for item in items %}
+						{% if item.order_id == order.id %}
+						<tr>
+                            <td>{{ item.product }}</td>
+                            <td>{{ item.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                        </tr>
+						{% endif %}
+                    {% endfor %}
+                    </table>
+                </td>
+            </tr>
+
+        {% endfor %}
+        </table>
+        {% endblock %}
+
+
+        {% endif %}
+
+    </div>
+    <!-- /container -->
+</div>
+<!-- /SECTION -->
+{% endblock %}
